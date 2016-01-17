@@ -1,0 +1,11 @@
+{
+	"name": "tsdsdd",
+  	"version": "0.0.1",
+  	"engines":{"node": "0.12.x"},
+	"dependencies": {
+		"request" : "~2.67",
+		"express" : "4.1.0",
+		"moment"  : "~2.11",
+		"dirwalk": "https://github.com/rweigel/dirwalk/tarball/master"
+	}
+}
