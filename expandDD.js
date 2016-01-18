@@ -5,12 +5,12 @@ var crypto = require("crypto")
 var moment = require("moment");
 
 path = "dirwalk/dirwalk.js"
-if (fs.existsSync("../../../" + path)) {
+if (fs.existsSync("../" + path)) {
 	// Development
-	var dirwalk = require("../../../" + path).dirwalk
+	var dirwalk = require("../" + path).dirwalk
 } else {
 	// Production
-	var dirwalk = require("../node_modules/"+path).dirwalk
+	var dirwalk = require("node_modules/"+path).dirwalk
 }
 
 var debug = false;
@@ -36,22 +36,35 @@ function expandDD(qs, cb) {
 	}
 
 	if (!qo["start"] || !qo["stop"]) {
-		if (debug) console.log("Start and stop time not given.  Will attempt to infer both from " + qo["uri"]);
+		if (debug) console.log("expandDD(): Start and stop time not given.  Will attempt to infer both from " + qo["uri"]);
 		if (qo["start"] && !qo["stop"]) {
-			if (debug) console.log("Start but not stop time given.  Will attempt to infer stop from " + qo["uri"]);
+			if (debug) console.log("expandDD(): Start but not stop time given.  Will attempt to infer stop from " + qo["uri"]);
 		}
  		if (!qo["start"] && qo["stop"]) {
-			if (debug) console.log("Stop but not start time given.  Will attempt to infer start from " + qo["uri"]);
+			if (debug) console.log("expandDD(): Stop but not start time given.  Will attempt to infer start from " + qo["uri"]);
 		}
 		findstartstop(qo, 
 			function (err, qo) {
 				if (err) {cb(err)} else {createcat(qo, cb)}
 			});
 	} else {
-		if (debug) console.log("Both start and stop time given.  Will not attempt to infer either from " + qo["uri"]);
+
+		var startu = new Date(qo["start"]).getTime();
+		var stopu = new Date(qo["stop"]).getTime();
+
+		if (startu > stopu) {
+			var emsg = "Given start is after given stop."
+			if (!cb) {
+				throw new Error(emsg);
+			} else {
+				cb(new Error(emsg));
+			}
+			return;
+		}
+
+		if (debug) console.log("expandDD(): Both start and stop time given.  Will not attempt to infer either from " + qo["uri"]);
 		createcat(qo, cb);
 	}
-	
 }
 
 function parseQueryString(qs) {
@@ -62,7 +75,7 @@ function parseQueryString(qs) {
 		kv = tmps.split("=");
 		qo[kv[0]] = kv[1];
 	}
-	qo["querystring"] = qs;
+	//qo["queryString"] = qs;
 	return qo;
 }
 
@@ -144,7 +157,7 @@ function createcat(qo, cb) {
 		cat["catalog"]["documentation"][0]["$"]["xlink:href"] = "http://tsds.org/dd/"
 	
 		cat["catalog"]["documentation"][0]["$"]["xlink:title"] = 
-				"Catalog derived from DD string " + qo["querystring"]
+				"Catalog derived from DD string " + qo["queryString"]
 
 		if (qo["datasetID"]) {
 			dataset[0]["$"]["id"] = qo["datasetID"]
@@ -291,11 +304,11 @@ function findstartstop(qo, cb) {
 
 	var idx = qo["uri"].indexOf("$")
 	if (idx > -1) {
-		if (debug) console.log("URI contains a template.");
+		if (debug) console.log("findstartstop(): URI contains a template.");
 		var base = qo["uri"].substring(0,idx);
 		var filepattern = qo["uri"].substring(idx);
-		if (debug) console.log("base = " + base);
-		if (debug) console.log("filepattern part = " + filepattern);
+		if (debug) console.log("findstartstop(): base = " + base);
+		if (debug) console.log("findstartstop(): filepattern part = " + filepattern);
 		filepattern = filepattern
 						.replace(/\$Y/g, "[0-9]{4}")
 						.replace(/\$m/g, "[0-9]{2}")
@@ -313,7 +326,7 @@ function findstartstop(qo, cb) {
 
 	function finish(q, idx, cb) {
 
-		if (debug) console.log("findstartstop(): Finish called.")
+		if (debug) console.log("findstartstop.finish(): Finish called.")
 
 		if (typeof(finish.Nc) == "undefined") {
 			finish.Nc = 1;
@@ -326,98 +339,85 @@ function findstartstop(qo, cb) {
 
 		if (finish.Nc == 2) {
 
-			if (debug) console.log("findstartstop(): Finish called second time.  Checking query objects and finding min start/max stop time.");
-			// TODO: Verify timeformat the same.
+			if (debug) console.log("findstartstop.finish(): Finish called second time.  Checking query objects and finding min start/max stop time.");
 			// TODO: Put in try/catch.
-			console.log(qo["timeFormat"] || finish.qs[0].timeformat)
 			var start1 = time2iso(finish.qs[0].start, qo["timeFormat"] || finish.qs[0].timeformat);
-			console.log("start1 = " + start1)
+			if (debug) console.log("findstartstop.finish(): start1 = " + start1)
 			var start2 = time2iso(finish.qs[1].start, qo["timeFormat"] || finish.qs[1].timeformat);
-			console.log("start2 = " + start2)
+			if (debug) console.log("findstartstop.finish(): start2 = " + start2)
 			var stop1  = time2iso(finish.qs[0].stop,  qo["timeFormat"] || finish.qs[0].timeformat);
-			console.log("stop1 = " + stop1)
+			if (debug) console.log("findstartstop.finish(): stop1 = " + stop1)
 			var stop2  = time2iso(finish.qs[1].stop,  qo["timeFormat"] || finish.qs[1].timeformat);
-			console.log("stop2 = " + stop2)
+			if (debug) console.log("findstartstop.finish(): stop2 = " + stop2)
 
 			var timeformat1 = finish.qs[0].timeformat;
 			var timeformat2 = finish.qs[1].timeformat;
 
-			var msg = "First/Last timeformat: " + timeformat1 + "/" + timeformat2;
-			console.log(msg);
+			var msg = "findstartstop.finish(): First/Last timeformat: " + timeformat1 + "/" + timeformat2;
+			if (debug) console.log(msg);
 
-			msg = "First start/stop: " + start1 + "/" + stop1;
-			msg = msg + "\n" + "Second start/stop: " + start2 + "/" + stop2;
-			console.log(msg);
+			msg = "findstartstop.finish(): First start/stop: " + start1 + "/" + stop1;
+			msg = msg + "\n" + "findstartstop.finish(): Second start/stop: " + start2 + "/" + stop2;
+			if (debug) console.log(msg);
 
-			if (timeformat1 !== timeformat2 && !qo["timeFormat"]) {
-				var emsg = "timeformats for first/last files do not match. ";
-				var emsg = emsg + "first/last timeformats: " + timeformat1 + "/" + timeformat2 + ".";
+			if (qo["start"] && !qo["stop"]) {
+				if (qo["start"] !== start1) { // TODO: Test should be time equivalence not string equivalence.
+					if (debug) console.log("finish(): Warning: Given start (" + qo["start"] + ") does not match determined start (" + start1 + ")");
+				}
+				qo["stop"] = stop2;
+				var timeformat = timeformat2;
+				var emsg = "";
+				if (timeformat !== qo["timeFormat"]) {
+					var emsg = "timeformat found for last file chunk does not match given timeFormat.";
+					var emsg = emsg + " last/given timeformats: " + timeformat2 + "/" + qo["timeFormat"] + ".";
+				}
+			}
+
+			if (!qo["start"] && qo["stop"]) {
+				if (qo["stop"] !== stop2) { // TODO: Test should be time equivalence not string equivalence.
+					if (debug) console.log("finish(): Warning: Given stop (" + qo["stop"] + ") does not match determined stop (" + stop2 + ")");
+				}
+				qo["start"] = start1;
+				var timeformat = timeformat1;
+				var emsg = "";
+				if (timeformat !== qo["timeFormat"]) {
+					var emsg = "timeformat found for first file chunk does not match given timeFormat.";
+					var emsg = emsg + " last/given timeformats: " + timeformat2 + "/" + qo["timeFormat"] + ".";
+				}
+				if (emsg) {
+					if (!cb) {
+						throw new Error(emsg);
+					} else {
+						cb(new Error(emsg));
+					}
+					return;
+				}
+			}
+
+			var emsg = "";
+			if ((timeformat1 !== timeformat2) && (!qo["start"] && !qo["stop"])) {
+				var emsg = "timeformat found for last file chunk does not match given timeFormat.";
+				var emsg = emsg + " last/given timeformats: " + timeformat2 + "/" + qo["timeFormat"] + ".";
+			}
+			if (emsg) {
 				if (!cb) {
 					throw new Error(emsg);
 				} else {
 					cb(new Error(emsg));
 				}
 				return;
-			} else {
-				var emsg = "Problem with time ordering.\n" + msg;
 			}
 
-			var start1u = (new Date(qo["start"])) || start1.getTime();
-			var start2u = (new Date(qo["start"])) || start2.getTime();
-			var stop1u = (new Date(qo["stop"])) || stop1.getTime();
-			var stop2u = (new Date(qo["stop"])) || stop1.getTime();
+			var start1u = new Date(start1).getTime();
+			var start2u = new Date(start2).getTime();
+			var stop1u  = new Date(stop1).getTime();
+			var stop2u  = new Date(stop2).getTime();
 
-			// Ordering should be start1u <= stop1u <= start2u <= stop2u
-			if (start1u > start2u) {
-				// Error
-				console.log(emsg);
-				var err = new Error(emsg);
+			if (debug) {
+				console.log("finish(): Calling callback with qo = ");
+				console.log(qo);
 			}
-			if (stop1u > start2u) {
-				// Error
-				console.log(emsg);
-				var err = new Error(emsg);
-			}
-			if (stop2u > stop2u) {
-				// Error
-				console.log(emsg);
-				var err = new Error(emsg);
-			}
-
-			if (err) {
-				console.log(err);
-				if (!cb) {
-					throw new Error("Timeformat for first and last lines to not match.");
-				} else {
-					cb(new Error("Timeformat for first and last lines to not match."));
-				}
-				return;
-			}
-
-			if (qo["start"]) {
-				if (qo["start"] !== start1) { // TODO: Test should be time equivalence not string equivalence.
-					console.log("Warning: Given start (" + qo["start"] + ") does not match determined start (" + start1 + ")");
-				}
-			} else {
-				qo["start"] = start1
-			}
-			if (qo["stop"]) {
-				if (qo["stop"] !== stop2) { // TODO: Test should be time equivalence not string equivalence.
-					console.log("Warning: Given stop (" + qo["stop"] + ") does not match determined stop (" + stop2 + ")");
-				}
-			} else {
-				qo["stop"] = stop2
-			}
-			if (qo["timeformat"]) {
-				if (qo["start"] !== timeformat1) { // TODO: Test should be time equivalence not string equivalence.
-					console.log("Warning: Given start (" + qo["timeformat"] + ") does not match determined start (" + timeformat1 + ")");
-				}
-			} else {
-				qo["timeformat"] = timeformat1
-			}
-
-			if (debug) console.log(qo);
-			cb(err, qo);
+			cb("", qo);
 		}
 	}
 
@@ -425,18 +425,18 @@ function findstartstop(qo, cb) {
 
 		if (idx > -1) {
 			var dopts = {url: base, filepattern: filepattern};
-			if (debug) console.log("Calling dirwalk with options: " + JSON.stringify(dopts));
+			if (debug) console.log("findstartstop(): Calling dirwalk with options: " + JSON.stringify(dopts));
 		} else {
 			// URI is a top-level directory.
 			var dopts = {url: qo["uri"]};
-			if (debug) console.log("Calling dirwalk with URI: " + qo["uri"]);
+			if (debug) console.log("findstartstop(): Calling dirwalk with URI: " + qo["uri"]);
 		}
 
 		dirwalk(dopts, function (error, list, flat, nested) {
 
 			if (error) console.log(error);
-			if (debug) console.log("Directory walk complete.  Found " + list.length + " matches.");
-			if (debug) console.log("Getting " + base + list[0])
+			if (debug) console.log("findstartstop.dirwalk(): Directory walk complete.  Found " + list.length + " matches.");
+			if (debug) console.log("findstartstop.dirwalk(): Getting " + base + list[0])
 			// TODO: Handle case where first and last few files are empty.
 			// TODO: Put code below in closure to remove need to hard wire
 			// values of 0, 1 (in finish() and list[]), and list.length-1 (in list[]).
@@ -445,9 +445,9 @@ function findstartstop(qo, cb) {
 					if (err) console.log(err);
 					//console.log("First chunk\n" + firstc);
 					//console.log("Last chunk\n" + lastc);
-					if (debug) console.log("Inspecting chunks.")
+					if (debug) console.log("findstartstop.dirwalk.getchunks(): Inspecting chunks.")
 					inspectchunks(firstc, lastc, function (err, q) {
-						if (debug) console.log("Inspection of chunks of " + list[0] + " finished.  Calling finished.")
+						if (debug) console.log("findstartstop.dirwalk.getchunks.inspectchunks(): Inspection of chunks of " + list[0] + " finished.  Calling finished.")
 						if (err) {
 							if (!cb) {
 								throw new Error(err);
@@ -460,27 +460,27 @@ function findstartstop(qo, cb) {
 				})
 			})
 
-			if (debug) console.log("Getting " + base + list[list.length-1])
+			if (debug) console.log("findstartstop.dirwalk(): Getting " + base + list[list.length-1])
 			// TODO: Handle case where first and last few files are empty.
 			getchunks(base + list[list.length-1], 
 				function (err, firstc, lastc) {
 					if (err) console.log(err);
 					//console.log("First chunk\n" + firstc);
 					//console.log("Last chunk\n" + lastc);
-					if (debug) console.log("Inspecting chunks.")
+					if (debug) console.log("findstartstop.getchunks(): Inspecting chunks.")
 					inspectchunks(firstc, lastc, function (err, q) {
-					if (debug) console.log("Inspection of chunks of " + list[list.length-1] + " finished.  Calling finished.")
-					if (err) {
-						if (!cb) {
-							throw new Error(err);
-						} else {
-							cb(new Error(err));
+						if (debug) console.log("findstartstop.getchunks.inspectchunks(): Inspection of chunks of " + list[list.length-1] + " finished.  Calling finished.")
+						if (err) {
+							if (!cb) {
+								throw new Error(err);
+							} else {
+								cb(new Error(err));
+							}
+							return;
 						}
-						return;
-					}
-					finish(q, 1, cb);
+						finish(q, 1, cb);
+					})
 				})
-			})
 		})
 	} else {
 
@@ -628,8 +628,8 @@ function inspectchunks(firstc, lastc, cb) {
 	var firsta = firstc.toString().replace(/^\s+/g, "").split("\n");
 	var lasta = lastc.toString().replace(/\s+$/g, "").split("\n");
 
-	if (debug) console.log("First line as array:" + firsta[0])
-	if (debug) console.log("Last line as array: " + lasta[lasta.length-1])
+	if (debug) console.log("inspectchunks(): First line as array: " + firsta[0])
+	if (debug) console.log("inspectchunks(): Last line as array:  " + lasta[lasta.length-1])
 
 	for (var i = 0; i < checks.length; i++) {
 
@@ -671,7 +671,7 @@ function inspectchunks(firstc, lastc, cb) {
 			//console.log("First test string: " + firstl);
 			var firstm = firstl.match(expression);
 			if (firstm) {
-				if (debug) console.log("First test string matches expression " + expression + "; timeformat = " + timeformat);
+				if (debug) console.log("inspectchunks(): First test string matches expression " + expression + "; timeformat = " + timeformat);
 				qo["start"] = firstl;
 				if (firstl[firstl.length - 1] === "Z") {
 					qo["timeformat"] = timeformat + "Z";
@@ -691,7 +691,7 @@ function inspectchunks(firstc, lastc, cb) {
 			//if (debug) console.log("Last test string:  " + lastl);
 			var lastm = lastl.match(expression);
 			if (lastm) {
-				if (debug) console.log("Last test string matches expression " + expression + "; timeformat = " + timeformat);
+				if (debug) console.log("inspectchunks(): Last test string matches expression " + expression + "; timeformat = " + timeformat);
 				qo["stop"] = lastl;
 				if (lastl[lastl.length - 1] === "Z") {
 					qo["timeformat"] = timeformat + "Z";

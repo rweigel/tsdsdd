@@ -5,7 +5,11 @@
 	"dependencies": {
 		"request" : "~2.67",
 		"express" : "4.1.0",
+		"serve-index": "*",
 		"moment"  : "~2.11",
 		"dirwalk": "https://github.com/rweigel/dirwalk/tarball/master"
+	},
+	"scripts": {
+		"test": "node test.js"
 	}
 }
