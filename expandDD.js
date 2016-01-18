@@ -10,7 +10,7 @@ if (fs.existsSync("../" + path)) {
 	var dirwalk = require("../" + path).dirwalk
 } else {
 	// Production
-	var dirwalk = require("node_modules/"+path).dirwalk
+	var dirwalk = require(__dirname + "/node_modules/" + path).dirwalk
 }
 
 var debug = false;
