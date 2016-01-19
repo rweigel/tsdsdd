@@ -110,6 +110,11 @@ function createcat(qo, cb) {
 			[
 				{
 					"$": {"id":"","timecolumns":"","timeformat":"","urltemplate":""},
+					"timeCoverage":
+						[{
+							"Start":[""],
+							"End":[""]
+						}],
 					"variables":
 						[{
 							"variable": []
@@ -129,18 +134,13 @@ function createcat(qo, cb) {
 						[
 							{"$":{"xlink:href":"","xlink:title":""}}
 						],
-					"timeCoverage":
-						[{
-							"Start":[""],
-							"End":[""]
-						}],
 					"dataset": dataset
 				}
 		}
 
-		cat["catalog"]["timeCoverage"][0]["Start"][0] = qo["start"]
-		cat["catalog"]["timeCoverage"][0]["End"][0] = qo["stop"]
-		delete cat["catalog"]["timeCoverage"][0]["Cadence"]
+		cat["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0] = qo["start"]
+		cat["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0] = qo["stop"]
+		delete cat["catalog"]["dataset"][0]["timeCoverage"][0]["Cadence"]
 
 		var id = crypto.createHash("md5").update(qo["queryString"]).digest("hex")
 		if (qo["catalogID"]) {
