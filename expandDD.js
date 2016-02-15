@@ -10,10 +10,10 @@ if (fs.existsSync("../" + path)) {
 	var dirwalk = require("../" + path).dirwalk
 } else {
 	// Production
-	var dirwalk = require(__dirname + "/node_modules/" + path).dirwalk
+	var dirwalk = require(path).dirwalk
 }
 
-var debug = false;
+var debug = true;
 function expandDD(qs, cb) {
 
 	if (typeof(qs) === "object") {
@@ -202,12 +202,12 @@ function createcat(qo, cb) {
 		}
 
 		var fillValues = [];
-		if (qo["fillValues"]) {
-			if (qo["fillValues"].split(",").length == 1) {
+		if (qo["columnFills"]) {
+			if (qo["columnFills"].split(",").length == 1) {
 				// fillValues apply to all variables.
-				dataset[0]["$"]["fillvalue"] = qo["fillValues"];
+				dataset[0]["$"]["fillvalue"] = qo["columnFills"];
 			} else {
-				fillValues = qo["fillValues"].split(",");
+				fillValues = qo["columnFills"].split(",");
 			}
 		}
 

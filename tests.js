@@ -9,8 +9,8 @@ i = 0
 tests[i] = {}
 tests[i].url = "uri="+BASE+"test/data/2015-11-20.txt&columns=2"
 tests[i].test = function (err, data) {
-	var testv0 = data["catalog"]["timeCoverage"][0]["Start"][0]
-	var testv1 = data["catalog"]["timeCoverage"][0]["End"][0]
+	var testv0 = data["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0]
+	var testv1 = data["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0]
 	var test0 = "2015-11-20T00:00:01.985Z"
 	var test1 = "2015-11-20T23:59:03.880Z"
 	if (debugt) console.log("Test:   Response Start/End values should be " + test0 + "/" + test1 + ".\nFound " + testv0 + "/" + testv1 + ".")	
@@ -29,8 +29,8 @@ tests[i] = {}
 tests[i].url = "uri="+BASE+"test/data/$Y-$m-$d.txt&start=-P10D&stop=P0D&columns=2"
 tests[i].test = function (err, data) {
 	// TODO: Test columnIDs, etc.
-	var testv0 = data["catalog"]["timeCoverage"][0]["Start"][0]
-	var testv1 = data["catalog"]["timeCoverage"][0]["End"][0]
+	var testv0 = data["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0]
+	var testv1 = data["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0]
 	var test0 = "-P10D"
 	var test1 = "P0D"
 	if (debugt) console.log("Test:   Response Start/End values should be " + test0 + "/" + test1 + ".  Found " + testv0 + "/" + testv1 + ".")	
@@ -59,8 +59,8 @@ i = i + 1;
 tests[i] = {}
 tests[i].url = "uri="+BASE+"test/data/file1.dat&columns=2&start=2001-01-01&stop=2001-01-03"
 tests[i].test = function (err, data) {
-	var testv0 = data["catalog"]["timeCoverage"][0]["Start"][0]
-	var testv1 = data["catalog"]["timeCoverage"][0]["End"][0]
+	var testv0 = data["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0]
+	var testv1 = data["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0]
 	var test0 = "2001-01-01"
 	var test1 = "2001-01-03"
 	var timeformat = data["catalog"]["dataset"][0]["$"]["timeformat"];
@@ -83,8 +83,8 @@ i = i + 1;
 tests[i] = {}
 tests[i].url = "uri="+BASE+"test/data/file1.dat&columns=2&start=2001-01-01&stop=2001-01-02"
 tests[i].test = function (err, data) {
-	var testv0 = data["catalog"]["timeCoverage"][0]["Start"][0]
-	var testv1 = data["catalog"]["timeCoverage"][0]["End"][0]
+	var testv0 = data["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0]
+	var testv1 = data["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0]
 	var test0 = "2001-01-01"
 	var test1 = "2001-01-02"
 	if (debugt) console.log("Test:   Response Start/End values should be " + test0 + "/" + test1 + ".");
@@ -115,8 +115,8 @@ i = i + 1;
 tests[i] = {}
 tests[i].url = "uri="+BASE+"test/data/Geotail/mag/$Y/geotailmagP$Y$m.dat&stop=2007-05-31T23:59:00.000Z&timeFormat=$Y $m $d $H $M $S.$(millis)",
 tests[i].test = function (err, data) {
-	var testv0 = data["catalog"]["timeCoverage"][0]["Start"][0]
-	var testv1 = data["catalog"]["timeCoverage"][0]["End"][0]
+	var testv0 = data["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0]
+	var testv1 = data["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0]
 	var test0 = "1993-10-01T04:00:00.000Z"
 	var test1 = "2007-05-31T23:59:00.000Z"
 	if (debugt) console.log("Test:   Response Start/End values should be " + test0 + "/" + test1 + ".  Found " + testv0 + "/" + testv1 + ".")	
@@ -132,8 +132,8 @@ i = i + 1;
 tests[i] = {}
 tests[i].url = tests[i-1].url.replace("stop=2007-05-31T23:59:00.000Z","start=2007-06-01").replace("$Y $m $d $H $M $S.$(millis)","$d $m $Y $H $M $S")
 tests[i].test = function (err, data) {
-	var testv0 = data["catalog"]["timeCoverage"][0]["Start"][0]
-	var testv1 = data["catalog"]["timeCoverage"][0]["End"][0]
+	var testv0 = data["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0]
+	var testv1 = data["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0]
 	var test0 = "2007-06-01"
 	var test1 = "2015-01-01T04:59:00.000Z"
 	if (debugt) console.log("Test  : Response Start/End values should be " + test0 + "/" + test1 + ".  Found " + testv0 + "/" + testv1 + ".")	

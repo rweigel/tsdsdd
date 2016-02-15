@@ -11,10 +11,10 @@ app.use("/test", express.static(__dirname + "/test"));
 var PORT = 3001;
 app.listen(PORT);
 
-var debug  = false; // Debug expandDD
-var debugt = false; // Show more logging for tests.
+var debug  = true; // Debug expandDD
+var debugt = true; // Show more logging for tests.
 
-var single = false; // Run only test number tn
+var single = true; // Run only test number tn
 var tn     = 0;
 
 if (debug) {
@@ -39,7 +39,9 @@ function runtests() {
 function runtest(tn) {
 	if (debug) console.log("\n")
 	if (debugt) console.log("----------------------------")
-	if (debugt) console.log("Test " + tn + ": Calling expandDD with query string: " + tests[i].url);
+	if (debugt) console.log("Test " + tn + ": Calling expandDD with query string: " + tests[tn].url);
+	if (debugt) console.log("Encoded query string: " + encodeURIComponent(tests[tn].url));
+
 	if (debug) console.log("")
 	expandDD({queryString: tests[tn].url, debug: debug}, function (err, cat) {
 		var status = tests[tn].test(err, cat);
