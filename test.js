@@ -14,7 +14,7 @@ app.listen(PORT);
 var debug  = true; // Debug expandDD
 var debugt = true; // Show more logging for tests.
 
-var single = true; // Run only test number tn
+var single = false; // Run only test number tn
 var tn     = 0;
 
 if (debug) {

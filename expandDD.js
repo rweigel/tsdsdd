@@ -36,12 +36,12 @@ function expandDD(qs, cb) {
 	}
 
 	if (!qo["start"] || !qo["stop"]) {
-		if (debug) console.log("expandDD(): Start and stop time not given.  Will attempt to infer both from " + qo["uri"]);
 		if (qo["start"] && !qo["stop"]) {
 			if (debug) console.log("expandDD(): Start but not stop time given.  Will attempt to infer stop from " + qo["uri"]);
-		}
- 		if (!qo["start"] && qo["stop"]) {
+		} else if (!qo["start"] && qo["stop"]) {
 			if (debug) console.log("expandDD(): Stop but not start time given.  Will attempt to infer start from " + qo["uri"]);
+		} else {
+			if (debug) console.log("expandDD(): Neither start nor stop time not given.  Will attempt to infer both from " + qo["uri"]);			
 		}
 		findstartstop(qo, 
 			function (err, qo) {
@@ -360,6 +360,21 @@ function findstartstop(qo, cb) {
 			msg = msg + "\n" + "findstartstop.finish(): Second start/stop: " + start2 + "/" + stop2;
 			if (debug) console.log(msg);
 
+			var emsg = "";
+			if ((timeformat1 !== timeformat2) && (!qo["start"] && !qo["stop"])) {
+			//if (timeformat1 !== timeformat2) {
+				var emsg = "timeformat found for last file chunk does not match given timeFormat.";
+				var emsg = emsg + " last/given timeformats: " + timeformat2 + "/" + qo["timeFormat"] + ".";
+			}
+			if (emsg) {
+				if (!cb) {
+					throw new Error(emsg);
+				} else {
+					cb(new Error(emsg));
+				}
+				return;
+			}
+
 			if (!qo["start"] && !qo["stop"]) {
 				qo["start"] = start1;
 				qo["stop"] = stop2;
@@ -380,7 +395,7 @@ function findstartstop(qo, cb) {
 
 			if (!qo["start"] && qo["stop"]) {
 				if (qo["stop"] !== stop2) { // TODO: Test should be time equivalence not string equivalence.
-					if (debug) console.log("finish(): Warning: Given stop (" + qo["stop"] + ") does not match determined stop (" + stop2 + ")");
+					if (debug) console.log("finish(): Warning: Given stop (" + qo["stop"] + ") does not match determined stop (" + stop2 + ").  Timeformat of stop file not checked.");
 				}
 				qo["start"] = start1;
 				var timeformat = timeformat1;
@@ -399,19 +414,6 @@ function findstartstop(qo, cb) {
 				}
 			}
 
-			var emsg = "";
-			if ((timeformat1 !== timeformat2) && (!qo["start"] && !qo["stop"])) {
-				var emsg = "timeformat found for last file chunk does not match given timeFormat.";
-				var emsg = emsg + " last/given timeformats: " + timeformat2 + "/" + qo["timeFormat"] + ".";
-			}
-			if (emsg) {
-				if (!cb) {
-					throw new Error(emsg);
-				} else {
-					cb(new Error(emsg));
-				}
-				return;
-			}
 
 			var start1u = new Date(start1).getTime();
 			var start2u = new Date(start2).getTime();

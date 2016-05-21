@@ -115,6 +115,12 @@ i = i + 1;
 tests[i] = {}
 tests[i].url = "uri="+BASE+"test/data/Geotail/mag/$Y/geotailmagP$Y$m.dat&stop=2007-05-31T23:59:00.000Z&timeFormat=$Y $m $d $H $M $S.$(millis)",
 tests[i].test = function (err, data) {
+	if (err) {
+		if (debugt) console.log(err)
+		return false
+	} else {
+		return true
+	}
 	var testv0 = data["catalog"]["dataset"][0]["timeCoverage"][0]["Start"][0]
 	var testv1 = data["catalog"]["dataset"][0]["timeCoverage"][0]["End"][0]
 	var test0 = "1993-10-01T04:00:00.000Z"
