@@ -360,6 +360,11 @@ function findstartstop(qo, cb) {
 			msg = msg + "\n" + "findstartstop.finish(): Second start/stop: " + start2 + "/" + stop2;
 			if (debug) console.log(msg);
 
+			if (!qo["start"] && !qo["stop"]) {
+				qo["start"] = start1;
+				qo["stop"] = stop2;
+			}
+
 			if (qo["start"] && !qo["stop"]) {
 				if (qo["start"] !== start1) { // TODO: Test should be time equivalence not string equivalence.
 					if (debug) console.log("finish(): Warning: Given start (" + qo["start"] + ") does not match determined start (" + start1 + ")");

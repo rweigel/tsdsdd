@@ -37,11 +37,12 @@ var q = "uri=http://localhost:8004/test/data/file1.dat&columns=2"
 
 var q = "uri=http://localhost:8004/test/data/file1.dat&columns=2&start=2001-01-01&stop=2001-01-03"
 
-var q = "uri=http://localhost:8004/test/data/Geotail/mag/$Y/geotailmagP$Y$m.dat&timeFormat=$d $m $Y $H $M $S&catalogLabel=Weygand SW Propagation Data Set&datasetID=Weygand/PropagatedSolarWindGSM/weimer/Geotail/mag&columns=7,8,9,10,11,12&columnIDs=Bx GSM,By GSM,Bz GSM,x GSM,y GSM,z GSM&columnUnits=nT,nT,nT,R_E,R_E,R_E&fillValues=NaN"
+var q = "uri=http://localhost:9999/test/data/Geotail/mag/$Y/geotailmagP$Y$m.dat&timeFormat=$d $m $Y $H $M $S&catalogLabel=Weygand SW Propagation Data Set&datasetID=Weygand/PropagatedSolarWindGSM/weimer/Geotail/mag&columns=7,8,9,10,11,12&columnIDs=Bx GSM,By GSM,Bz GSM,x GSM,y GSM,z GSM&columnUnits=nT,nT,nT,R_E,R_E,R_E&fillValues=NaN"
 
-var q = "stop=2007-05-31T23:59:00.000Z&uri=http://localhost:8004/test/data/Geotail/mag/$Y/geotailmagP$Y$m.dat&timeFormat=$Y $m $d $H $M $S&catalogLabel=Weygand SW Propagation Data Set&datasetID=Weygand/PropagatedSolarWindGSM/weimer/Geotail/mag&columns=7,8,9,10,11,12&columnIDs=Bx GSM,By GSM,Bz GSM,x GSM,y GSM,z GSM&columnUnits=nT,nT,nT,Re,Re,Re&fillValues=NaN"
-var q = q.replace("stop=2007-05-31T23:59:00.000Z","start=2007-06-01")
-var q = q.replace("timeFormat=$Y $m $d $H $M $S","timeFormat=$d $m $Y $H $M $S")
+//var q = "stop=2007-05-31T23:59:00.000Z&uri=http://localhost:8004/test/data/Geotail/mag/$Y/geotailmagP$Y$m.dat&timeFormat=$Y $m $d $H $M $S&catalogLabel=Weygand SW Propagation Data Set&datasetID=Weygand/PropagatedSolarWindGSM/weimer/Geotail/mag&columns=7,8,9,10,11,12&columnIDs=Bx GSM,By GSM,Bz GSM,x GSM,y GSM,z GSM&columnUnits=nT,nT,nT,Re,Re,Re&fillValues=NaN"
+//var q = q.replace("stop=2007-05-31T23:59:00.000Z","start=2007-06-01")
+//var q = q.replace("timeFormat=$Y $m $d $H $M $S","timeFormat=$d $m $Y $H $M $S")
+var q = 'uri=http://vmo.igpp.ucla.edu/data1/sandbox/Weygand/Wind/MFI/Propagated.3DP/GSM/V3/$Y/windmagP$Y$m.dat&timeFormat=$d $m $Y $H $M $S&columns=7,8,9,10,11,12&columnIDs=Bx-GSM,By-GSM,Bz-GSM,x-GSM,y-GSM,z-GSM&columnUnits=nT,nT,nT,Re,Re,Re&columnFills=1e34&catalogLabel=Weigand SW Propagation Data Set&datasetID=Weygand/Wind/MFI/Propagated.3DP/GSM/V3/';
 
 console.log('\n----\n');
 console.log('Calling expandDD with query string: ' + q);
